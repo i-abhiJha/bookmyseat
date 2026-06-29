@@ -1,4 +1,4 @@
-# 🎟️ BookMySeat — Event Ticketing & Seat-Reservation System
+# BookMySeat : Event Ticketing & Seat-Reservation System
 
 A **MERN** app for booking event seats under high contention. The main goal is
 to make sure two users can never book the same seat, even when many requests hit
