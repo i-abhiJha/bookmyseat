@@ -281,9 +281,3 @@ BASE_URL=http://localhost:5000 EVENT_ID=<id> REQUESTS=600 USERS=40 CONCURRENCY=1
 - [x] Concurrency load test — 600 concurrent holds on 50 seats → exactly 50 winners, 0 double-bookings
 - [x] React frontend (Vite): browse → interactive seat-map → hold w/ countdown timer → checkout → my bookings
 - [ ] Virtual queue / waiting room for flash sales (stretch)
-
----
-
-## License
-
-MIT
