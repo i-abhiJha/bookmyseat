@@ -1,0 +1,58 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: bms-mongo
+    restart: unless-stopped
+    # Host port 27018 (not 27017) to avoid clashing with other local Mongo
+    # instances. Container-internal port stays 27017.
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: bms-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    # Host port 6380 (not 6379) to avoid clashing with other local Redis.
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./backend
+    container_name: bms-api
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGO_URI: mongodb://mongo:27017/bookmyseat
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev-access-secret-change-me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-me}
+      HOLD_TTL_SECONDS: 300
+      LOG_LEVEL: info
+    # Host port 5000 (not 4000) to avoid clashing with other local APIs.
+    ports:
+      - "5000:4000"
+
+volumes:
+  mongo-data:
+  redis-data:
